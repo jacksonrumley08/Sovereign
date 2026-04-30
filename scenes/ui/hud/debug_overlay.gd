@@ -37,13 +37,40 @@ func _process(_delta: float) -> void:
 		if p.has_node("CombatStateMachine"):
 			var sm = p.get_node("CombatStateMachine")
 			lines.append("Combat: %s" % sm.state_name())
-		lines.append("Weapon: %s" % p.equipped_weapon)
-		lines.append("Target: %s" % ("yes" if p.attack_target else "—"))
+		# Show actual main_hand item from equipment manager
+		var main_label: String = p.equipped_weapon
+		if p.has_node("EquipmentManager") and p.has_node("Inventory"):
+			var eq: EquipmentManager = p.get_node("EquipmentManager")
+			var inv: Inventory = p.get_node("Inventory")
+			var hand_type: String = eq.get_equipped_item_type("main_hand", inv)
+			if not hand_type.is_empty():
+				main_label = ItemDefs.get_item(hand_type).get("display_name", hand_type)
+		lines.append("Hand:   %s" % main_label)
+		lines.append("Target: %s" % ("yes" if p.attack_target else ("gathering" if p.gather_target else "—")))
 		lines.append("HP:    %d / %d" % [p.health, p.max_health])
 		lines.append("SP:    %5.1f / %5.1f" % [p.stamina, p.max_stamina])
 		lines.append("HG:    %5.1f / %5.1f" % [p.hunger, 100.0])
 		lines.append("Wt:    %5.1f / %5.1f kg" % [p.carry_weight, p.max_carry_weight])
 		lines.append("Play:  %5.1fs" % p.total_playtime)
+		# Inventory + gathering
+		if p.has_node("Inventory"):
+			var inv: Inventory = p.get_node("Inventory")
+			lines.append("")
+			lines.append("Inv: %s" % inv.summary())
+		if p.is_gathering:
+			lines.append("Gather: %.1fs / %.1fs (%s)" % [p.gather_progress, p.gather_total, p.gather_target.resource_type])
+		# Top skills
+		if p.has_node("SkillSystem"):
+			var sk: SkillSystem = p.get_node("SkillSystem")
+			var top: Array = []
+			for skill in ["woodcutting", "mining", "quarrying", "farming", "melee_weapons"]:
+				var lv: int = sk.get_level(skill)
+				var xp: int = sk.get_xp(skill)
+				if lv > 1 or xp > 0:
+					top.append("%s L%d (%d xp)" % [skill, lv, xp])
+			if top.size() > 0:
+				lines.append("")
+				lines.append("Skills: " + ", ".join(top))
 	else:
 		lines.append("(no player)")
 

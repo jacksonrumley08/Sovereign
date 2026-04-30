@@ -11,6 +11,7 @@ extends CharacterBody3D
 @export var move_speed: float = 3.5
 @export var equipped_weapon: String = "flint_knife"
 @export var equipped_armor: String = "none"
+@export var peaceful: bool = false  # Won't aggro on proximity or on hit
 
 # Stats consumed by CombatStateMachine
 var stamina: float = 100.0
@@ -48,7 +49,7 @@ func _update_ai(_delta: float) -> void:
 
 	match ai_state:
 		AIState.IDLE, AIState.PATROL:
-			if dist < aggro_range:
+			if not peaceful and dist < aggro_range:
 				target = player
 				ai_state = AIState.CHASE
 		AIState.CHASE:
@@ -139,6 +140,8 @@ func _spawn_damage_vfx(amount: int, zone: String, blocked: bool) -> void:
 
 
 func _on_damaged(_amount: int) -> void:
+	if peaceful:
+		return
 	# Aggro on hit if not already engaged
 	if ai_state in [AIState.IDLE, AIState.PATROL]:
 		target = GameManager.player

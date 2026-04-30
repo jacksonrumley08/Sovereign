@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://b8sov1hitfx0001"]
+[gd_scene load_steps=5 format=3 uid="uid://wk22ytshv4vs"]
 
 [ext_resource type="Script" path="res://scenes/effects/hit_effect.gd" id="1_hf"]
 
