@@ -59,6 +59,12 @@ func _process(_delta: float) -> void:
 			lines.append("Inv: %s" % inv.summary())
 		if p.is_gathering:
 			lines.append("Gather: %.1fs / %.1fs (%s)" % [p.gather_progress, p.gather_total, p.gather_target.resource_type])
+		if p.has_node("CraftingSystem"):
+			var cs: CraftingSystem = p.get_node("CraftingSystem")
+			if cs.is_crafting():
+				lines.append("Crafting: %.0f%%  (%s)" % [cs.progress() * 100, cs.active_recipe_id])
+		if not p.nearest_station_type.is_empty():
+			lines.append("Station: %s (F to craft)" % p.nearest_station_type)
 		# Top skills
 		if p.has_node("SkillSystem"):
 			var sk: SkillSystem = p.get_node("SkillSystem")

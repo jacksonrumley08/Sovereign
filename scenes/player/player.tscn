@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://wk3b2bcwn4vs"]
+[gd_scene load_steps=12 format=3 uid="uid://wk3b2bcwn4vs"]
 
 [ext_resource type="Script" path="res://scenes/player/player.gd" id="1_player"]
 [ext_resource type="Script" path="res://scenes/player/player_camera.gd" id="2_camera"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://scripts/systems/inventory/inventory.gd" id="5_inv"]
 [ext_resource type="Script" path="res://scripts/systems/inventory/equipment_manager.gd" id="6_eq"]
 [ext_resource type="Script" path="res://scripts/systems/skills/skill_system.gd" id="7_sk"]
+[ext_resource type="Script" path="res://scripts/systems/crafting/crafting_system.gd" id="8_cr"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1"]
 radius = 0.4
@@ -21,7 +22,7 @@ albedo_color = Color(0.85, 0.6, 0.4, 1)
 
 [node name="Player" type="CharacterBody3D"]
 collision_layer = 1
-collision_mask = 7
+collision_mask = 15
 script = ExtResource("1_player")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
@@ -56,6 +57,9 @@ script = ExtResource("6_eq")
 
 [node name="SkillSystem" type="Node" parent="."]
 script = ExtResource("7_sk")
+
+[node name="CraftingSystem" type="Node" parent="."]
+script = ExtResource("8_cr")
 
 [node name="PlayerCamera" type="Camera3D" parent="."]
 script = ExtResource("2_camera")

@@ -11,6 +11,12 @@ extends CharacterBody3D
 @onready var inventory: Inventory = $Inventory
 @onready var equipment: EquipmentManager = $EquipmentManager
 @onready var skills: SkillSystem = $SkillSystem
+@onready var crafting: CraftingSystem = $CraftingSystem
+
+# Crafting station tracking — set by being near a workbench/forge/campfire structure.
+var nearest_station_type: String = ""
+var nearest_station_id: int = 0
+var crafting_station_id: int = 0  # alias for the netmsg payload
 
 var move_target: Vector3 = Vector3.ZERO
 var is_moving: bool = false
@@ -58,7 +64,20 @@ func _ready() -> void:
 		inventory.add_item("flint_knife", 1)
 	if skills:
 		skills.level_up.connect(func(s, lv): GameManager.log("info", "Level up: %s → %d" % [s, lv]))
+	if crafting:
+		crafting.craft_completed.connect(_on_craft_completed)
+		crafting.craft_failed.connect(func(rid, reason): GameManager.log("warn", "Craft %s failed: %s" % [rid, reason]))
+		crafting.craft_started.connect(func(rid, dur): GameManager.log("info", "Crafting %s (%.1fs)..." % [rid, dur]))
 	GameManager.log("info", "Player ready, weapon=%s, inventory=%s" % [equipped_weapon, inventory.summary()])
+
+
+func _on_craft_completed(_recipe_id: String, output_item: String, qty: int, _quality: String) -> void:
+	inventory.add_item(output_item, qty)
+	# XP — small fixed amount; refine later
+	var def: Dictionary = RecipeDefs.get_recipe(_recipe_id)
+	if not def.is_empty() and skills:
+		skills.add_xp(def["skill"], 10 + def["skill_req"] / 2)
+	GameManager.log("info", "Crafted %s ×%d  [inv: %s]" % [output_item, qty, inventory.summary()])
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -76,6 +95,18 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_7: _set_weapon("iron_mace")
 			KEY_8: _equip_tool("stone_axe")
 			KEY_9: _equip_tool("stone_pickaxe")
+			KEY_F: _try_open_crafting()
+
+
+func _try_open_crafting() -> void:
+	# Open inventory crafting (no station) if not near a station; otherwise open station-specific.
+	var station: String = nearest_station_type if not nearest_station_type.is_empty() else "inventory"
+	crafting_station_id = nearest_station_id
+	var ui: Node = get_tree().current_scene.get_node_or_null("UIContainer/CraftingScreen")
+	if ui == null:
+		ui = get_tree().current_scene.get_node_or_null("CraftingScreen")
+	if ui and ui.has_method("open"):
+		ui.open(station)
 
 
 func _set_weapon(weapon_id: String) -> void:
@@ -103,13 +134,38 @@ func _physics_process(delta: float) -> void:
 	_update_sprint(delta)
 	_update_stamina(delta)
 	_update_hunger(delta)
+	_update_nearest_station()
 	_process_gathering(delta)
 	_process_attack_target()
+	_process_structure_interact()
 	_process_movement(delta)
 
 
+func _update_nearest_station() -> void:
+	# Find nearest non-blueprint structure with a station_type within 3m.
+	nearest_station_type = ""
+	nearest_station_id = 0
+	var nearest_dist: float = 3.0
+	for s in get_tree().get_nodes_in_group("structure"):
+		if s == null or s.is_blueprint:
+			continue
+		var st: String = s.station_type()
+		if st.is_empty():
+			continue
+		var d: float = global_position.distance_to(s.global_position)
+		if d < nearest_dist:
+			nearest_dist = d
+			nearest_station_type = st
+			nearest_station_id = s.get_instance_id()
+
+
 func _handle_left_click(screen_pos: Vector2) -> void:
-	# Cancel any active gather on new click
+	# Don't intercept clicks while a blueprint placer is active — let it handle.
+	var bp: Node = get_tree().current_scene.get_node_or_null("BlueprintPlacer")
+	if bp == null:
+		bp = get_node_or_null("/root/Main/BlueprintPlacer")
+	if bp and bp.has_method("is_active") and bp.is_active():
+		return
 	_cancel_gather()
 	var space_state := get_world_3d().direct_space_state
 	var from: Vector3 = camera.project_ray_origin(screen_pos)
@@ -125,6 +181,12 @@ func _handle_left_click(screen_pos: Vector2) -> void:
 			_set_move_target(c.global_position)
 			GameManager.log("info", "Targeted %s" % c.resource_type)
 			return
+		# Structure (blueprint contribute, or station interact)?
+		if c.is_in_group("structure"):
+			_set_move_target(c.global_position)
+			# When close enough, the contribute happens via _process_structure_interact below
+			_pending_structure = c
+			return
 		# Enemy?
 		if c.has_method("take_damage") and c != self:
 			attack_target = c
@@ -135,8 +197,27 @@ func _handle_left_click(screen_pos: Vector2) -> void:
 	# Ground move
 	attack_target = null
 	gather_target = null
+	_pending_structure = null
 	var ground_pos: Vector3 = camera.screen_to_ground(screen_pos)
 	_set_move_target(ground_pos)
+
+
+var _pending_structure: Node = null
+
+
+func _process_structure_interact() -> void:
+	if _pending_structure == null:
+		return
+	if not is_instance_valid(_pending_structure):
+		_pending_structure = null
+		return
+	var d: float = global_position.distance_to(_pending_structure.global_position)
+	if d > 2.5:
+		return
+	is_moving = false
+	if _pending_structure.has_method("interact"):
+		_pending_structure.interact(self)
+	_pending_structure = null
 
 
 func _set_move_target(target_pos: Vector3) -> void:
