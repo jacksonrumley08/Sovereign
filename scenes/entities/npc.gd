@@ -118,6 +118,24 @@ func take_damage(damage_result: Dictionary) -> void:
 	var amount: int = damage_result.get("final_damage", 0)
 	GameManager.log("info", "NPC hit for %d (%s)" % [amount, damage_result.get("hit_zone", "?")])
 	health_component.take_damage(amount)
+	_spawn_damage_vfx(amount, damage_result.get("hit_zone", "torso"), damage_result.get("blocked", false))
+
+
+func _spawn_damage_vfx(amount: int, zone: String, blocked: bool) -> void:
+	var hit_pos: Vector3 = global_position + Vector3(0, 1.5, 0)
+	# Damage number
+	var dn_scene: PackedScene = load("res://scenes/effects/damage_number.tscn")
+	if dn_scene:
+		var dn: Node3D = dn_scene.instantiate()
+		get_tree().current_scene.add_child(dn)
+		dn.global_position = hit_pos
+		dn.setup(amount, zone, blocked)
+	# Hit burst
+	var fx_scene: PackedScene = load("res://scenes/effects/hit_effect.tscn")
+	if fx_scene:
+		var fx: Node3D = fx_scene.instantiate()
+		get_tree().current_scene.add_child(fx)
+		fx.global_position = hit_pos
 
 
 func _on_damaged(_amount: int) -> void:

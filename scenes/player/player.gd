@@ -50,6 +50,22 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			_handle_left_click(event.position)
+	elif event is InputEventKey and event.pressed and not event.echo:
+		# Quick weapon hotswap for testing combat feel
+		match event.keycode:
+			KEY_1: _set_weapon("flint_knife")
+			KEY_2: _set_weapon("bronze_sword")
+			KEY_3: _set_weapon("iron_sword")
+			KEY_4: _set_weapon("bronze_spear")
+			KEY_5: _set_weapon("iron_spear")
+			KEY_6: _set_weapon("bronze_mace")
+			KEY_7: _set_weapon("iron_mace")
+
+
+func _set_weapon(weapon_id: String) -> void:
+	equipped_weapon = weapon_id
+	var w: Dictionary = WeaponDefs.get_weapon(weapon_id)
+	GameManager.log("info", "Weapon → %s (dmg=%d, range=%.1fm, speed=%.2fs)" % [w["display_name"], w["damage"], w["range"], w["speed"]])
 
 
 func _physics_process(delta: float) -> void:
@@ -211,6 +227,22 @@ func take_damage(damage_result: Dictionary) -> void:
 	if health_component:
 		health_component.take_damage(amount)
 	GameManager.log("info", "Player hit for %d (HP=%d)" % [amount, health_component.health if health_component else -1])
+	_spawn_damage_vfx(amount, damage_result.get("hit_zone", "torso"), damage_result.get("blocked", false))
+
+
+func _spawn_damage_vfx(amount: int, zone: String, blocked: bool) -> void:
+	var hit_pos: Vector3 = global_position + Vector3(0, 1.5, 0)
+	var dn_scene: PackedScene = load("res://scenes/effects/damage_number.tscn")
+	if dn_scene:
+		var dn: Node3D = dn_scene.instantiate()
+		get_tree().current_scene.add_child(dn)
+		dn.global_position = hit_pos
+		dn.setup(amount, zone, blocked)
+	var fx_scene: PackedScene = load("res://scenes/effects/hit_effect.tscn")
+	if fx_scene:
+		var fx: Node3D = fx_scene.instantiate()
+		get_tree().current_scene.add_child(fx)
+		fx.global_position = hit_pos
 
 
 func _on_died() -> void:

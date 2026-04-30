@@ -1,0 +1,37 @@
+[gd_scene load_steps=5 format=3 uid="uid://b8sov1hitfx0001"]
+
+[ext_resource type="Script" path="res://scenes/effects/hit_effect.gd" id="1_hf"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_1"]
+radius = 0.05
+height = 0.1
+radial_segments = 6
+rings = 3
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1"]
+shading_mode = 0
+albedo_color = Color(0.95, 0.2, 0.15, 1)
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_1"]
+emission_shape = 1
+emission_sphere_radius = 0.1
+direction = Vector3(0, 1, 0)
+spread = 60.0
+initial_velocity_min = 2.0
+initial_velocity_max = 4.0
+gravity = Vector3(0, -9.8, 0)
+scale_min = 0.5
+scale_max = 1.5
+
+[node name="HitEffect" type="Node3D"]
+script = ExtResource("1_hf")
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="."]
+emitting = false
+amount = 16
+lifetime = 0.5
+one_shot = true
+explosiveness = 1.0
+process_material = SubResource("ParticleProcessMaterial_1")
+draw_pass_1 = SubResource("SphereMesh_1")
+material_override = SubResource("StandardMaterial3D_1")
