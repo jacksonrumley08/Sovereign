@@ -8,6 +8,7 @@
 [ext_resource type="Script" path="res://scripts/systems/inventory/equipment_manager.gd" id="6_eq"]
 [ext_resource type="Script" path="res://scripts/systems/skills/skill_system.gd" id="7_sk"]
 [ext_resource type="Script" path="res://scripts/systems/crafting/crafting_system.gd" id="8_cr"]
+[ext_resource type="Script" path="res://scripts/systems/kingdom/kingdom_system.gd" id="9_kg"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1"]
 radius = 0.4
@@ -60,6 +61,9 @@ script = ExtResource("7_sk")
 
 [node name="CraftingSystem" type="Node" parent="."]
 script = ExtResource("8_cr")
+
+[node name="KingdomSystem" type="Node" parent="."]
+script = ExtResource("9_kg")
 
 [node name="PlayerCamera" type="Camera3D" parent="."]
 script = ExtResource("2_camera")

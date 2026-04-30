@@ -8,14 +8,20 @@ extends Node
 var blueprint_placer: Node3D = null
 var build_menu: Control = null
 var crafting_screen: Control = null
+var hud_bars: CanvasLayer = null
+var kingdom_screen: Control = null
+var trade_window: Control = null
 
 
 func _ready() -> void:
 	GameManager.log("info", "Sovereign main scene loaded")
 	_load_world()
+	_load_hud_bars()
 	_load_debug_overlay()
 	_load_build_menu()
 	_load_crafting_screen()
+	_load_kingdom_screen()
+	_load_trade_window()
 	_load_blueprint_placer()
 	GameManager.change_state(GameManager.GameState.PLAYING)
 
@@ -53,6 +59,32 @@ func _load_crafting_screen() -> void:
 	crafting_screen = scene.instantiate()
 	crafting_screen.name = "CraftingScreen"
 	ui_container.add_child(crafting_screen)
+
+
+func _load_hud_bars() -> void:
+	var scene: PackedScene = load("res://scenes/ui/hud/hud_bars.tscn")
+	if scene == null:
+		return
+	hud_bars = scene.instantiate()
+	add_child(hud_bars)
+
+
+func _load_kingdom_screen() -> void:
+	var scene: PackedScene = load("res://scenes/ui/menus/kingdom_screen.tscn")
+	if scene == null:
+		return
+	kingdom_screen = scene.instantiate()
+	kingdom_screen.name = "KingdomScreen"
+	ui_container.add_child(kingdom_screen)
+
+
+func _load_trade_window() -> void:
+	var scene: PackedScene = load("res://scenes/ui/trade/trade_window.tscn")
+	if scene == null:
+		return
+	trade_window = scene.instantiate()
+	trade_window.name = "TradeWindow"
+	ui_container.add_child(trade_window)
 
 
 func _load_blueprint_placer() -> void:

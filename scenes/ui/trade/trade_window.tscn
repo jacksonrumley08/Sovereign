@@ -1,0 +1,69 @@
+[gd_scene load_steps=3 format=3 uid="uid://b8sov1trade001"]
+
+[ext_resource type="Script" path="res://scenes/ui/trade/trade_window.gd" id="1_trade"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1"]
+bg_color = Color(0.08, 0.08, 0.1, 0.92)
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 12.0
+
+[node name="TradeWindow" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 1
+script = ExtResource("1_trade")
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -360.0
+offset_top = -200.0
+offset_right = 360.0
+offset_bottom = 200.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_1")
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+
+[node name="HSplit" type="HSplitContainer" parent="Panel/MarginContainer"]
+layout_mode = 2
+
+[node name="YourSide" type="VBoxContainer" parent="Panel/MarginContainer/HSplit"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Panel/MarginContainer/HSplit/YourSide"]
+layout_mode = 2
+text = "You offer:"
+
+[node name="List" type="VBoxContainer" parent="Panel/MarginContainer/HSplit/YourSide"]
+layout_mode = 2
+
+[node name="ConfirmButton" type="Button" parent="Panel/MarginContainer/HSplit/YourSide"]
+layout_mode = 2
+text = "Confirm"
+
+[node name="TheirSide" type="VBoxContainer" parent="Panel/MarginContainer/HSplit"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Panel/MarginContainer/HSplit/TheirSide"]
+layout_mode = 2
+text = "They offer:"
+
+[node name="List" type="VBoxContainer" parent="Panel/MarginContainer/HSplit/TheirSide"]
+layout_mode = 2
+
+[node name="ConfirmButton" type="Button" parent="Panel/MarginContainer/HSplit/TheirSide"]
+layout_mode = 2
+text = "Confirm"
+
+[node name="Status" type="Label" parent="Panel/MarginContainer"]
+layout_mode = 2
+text = "..."

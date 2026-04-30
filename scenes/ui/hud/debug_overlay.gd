@@ -65,6 +65,12 @@ func _process(_delta: float) -> void:
 				lines.append("Crafting: %.0f%%  (%s)" % [cs.progress() * 100, cs.active_recipe_id])
 		if not p.nearest_station_type.is_empty():
 			lines.append("Station: %s (F to craft)" % p.nearest_station_type)
+		if p.has_node("KingdomSystem"):
+			var kg: KingdomSystem = p.get_node("KingdomSystem")
+			if kg.has_kingdom():
+				lines.append("Kingdom: %s" % kg.current_kingdom["name"])
+			else:
+				lines.append("Kingdom: none (K)")
 		# Top skills
 		if p.has_node("SkillSystem"):
 			var sk: SkillSystem = p.get_node("SkillSystem")

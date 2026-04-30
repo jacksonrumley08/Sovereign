@@ -58,10 +58,14 @@ func _ready() -> void:
 		max_health = health_component.max_health
 	if inventory:
 		inventory.weight_changed.connect(func(w): carry_weight = w)
-		# Starter kit so the dev can immediately test gathering
+		# Starter kit
 		inventory.add_item("stone_axe", 1)
 		inventory.add_item("stone_pickaxe", 1)
 		inventory.add_item("flint_knife", 1)
+		inventory.add_item("seed_wheat", 5)
+		inventory.add_item("seed_carrot", 5)
+		inventory.add_item("rope", 3)
+		inventory.add_item("animal_feed", 10)
 	if skills:
 		skills.level_up.connect(func(s, lv): GameManager.log("info", "Level up: %s → %d" % [s, lv]))
 	if crafting:
@@ -138,6 +142,7 @@ func _physics_process(delta: float) -> void:
 	_process_gathering(delta)
 	_process_attack_target()
 	_process_structure_interact()
+	_process_animal_interact()
 	_process_movement(delta)
 
 
@@ -184,8 +189,12 @@ func _handle_left_click(screen_pos: Vector2) -> void:
 		# Structure (blueprint contribute, or station interact)?
 		if c.is_in_group("structure"):
 			_set_move_target(c.global_position)
-			# When close enough, the contribute happens via _process_structure_interact below
 			_pending_structure = c
+			return
+		# Animal?
+		if c.is_in_group("animal"):
+			_set_move_target(c.global_position)
+			_pending_animal = c
 			return
 		# Enemy?
 		if c.has_method("take_damage") and c != self:
@@ -203,6 +212,7 @@ func _handle_left_click(screen_pos: Vector2) -> void:
 
 
 var _pending_structure: Node = null
+var _pending_animal: Node = null
 
 
 func _process_structure_interact() -> void:
@@ -218,6 +228,21 @@ func _process_structure_interact() -> void:
 	if _pending_structure.has_method("interact"):
 		_pending_structure.interact(self)
 	_pending_structure = null
+
+
+func _process_animal_interact() -> void:
+	if _pending_animal == null:
+		return
+	if not is_instance_valid(_pending_animal):
+		_pending_animal = null
+		return
+	var d: float = global_position.distance_to(_pending_animal.global_position)
+	if d > 2.0:
+		return
+	is_moving = false
+	if _pending_animal.has_method("interact"):
+		_pending_animal.interact(self)
+	_pending_animal = null
 
 
 func _set_move_target(target_pos: Vector3) -> void:

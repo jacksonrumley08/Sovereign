@@ -18,6 +18,23 @@ const ITEMS: Dictionary = {
 	"berries":    {"display_name": "Berries",    "weight": 0.2,  "stackable": true,  "category": "food",     "slot": "none", "spoil_hours": 4},
 	"meat_raw":   {"display_name": "Raw Meat",   "weight": 1.0,  "stackable": true,  "category": "food",     "slot": "none", "spoil_hours": 3},
 	"meat_cooked":{"display_name": "Cooked Meat","weight": 0.8,  "stackable": true,  "category": "food",     "slot": "none", "spoil_hours": 10},
+	"egg":        {"display_name": "Egg",        "weight": 0.1,  "stackable": true,  "category": "food",     "slot": "none", "spoil_hours": 24},
+	"milk":       {"display_name": "Milk",       "weight": 0.5,  "stackable": true,  "category": "food",     "slot": "none", "spoil_hours": 12},
+	"leather":    {"display_name": "Leather",    "weight": 0.4,  "stackable": true,  "category": "resource", "slot": "none"},
+	"manure":     {"display_name": "Manure",     "weight": 0.5,  "stackable": true,  "category": "resource", "slot": "none"},
+
+	# --- Crops (harvested) ---
+	"wheat":      {"display_name": "Wheat",   "weight": 0.2,  "stackable": true, "category": "food", "slot": "none", "spoil_hours": 48},
+	"barley":     {"display_name": "Barley",  "weight": 0.2,  "stackable": true, "category": "food", "slot": "none", "spoil_hours": 48},
+	"carrot":     {"display_name": "Carrot",  "weight": 0.2,  "stackable": true, "category": "food", "slot": "none", "spoil_hours": 24},
+
+	# --- Seeds (plantable) ---
+	"seed_wheat":  {"display_name": "Wheat Seed",  "weight": 0.05, "stackable": true, "category": "seed", "slot": "none"},
+	"seed_barley": {"display_name": "Barley Seed", "weight": 0.05, "stackable": true, "category": "seed", "slot": "none"},
+	"seed_carrot": {"display_name": "Carrot Seed", "weight": 0.05, "stackable": true, "category": "seed", "slot": "none"},
+
+	# --- Animal husbandry ---
+	"animal_feed": {"display_name": "Animal Feed", "weight": 0.3, "stackable": true, "category": "resource", "slot": "none"},
 
 	# --- Tools ---
 	"stone_axe":     {"display_name": "Stone Axe",     "weight": 1.5, "stackable": false, "category": "tool", "slot": "main_hand", "durability": 30,  "tool_type": "axe"},

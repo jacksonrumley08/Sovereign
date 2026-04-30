@@ -14,6 +14,12 @@ extends StaticBody3D
 var def: Dictionary = {}
 var contributed: Dictionary = {}  # item_type -> qty contributed
 
+# Farming state (only meaningful when variant == "farm_plot")
+var planted_crop: String = ""
+var growth_progress: float = 0.0
+var water_level: float = 0.0
+var soil_fertility: float = 1.0
+
 signal blueprint_completed(structure: Node)
 
 
@@ -21,6 +27,28 @@ func _ready() -> void:
 	add_to_group("structure")
 	def = StructureDefs.get_structure(structure_type)
 	_apply_visual()
+	if def.get("variant", "") == "farm_plot" and not is_blueprint:
+		set_process(true)
+
+
+func _process(delta: float) -> void:
+	if def.get("variant", "") != "farm_plot" or is_blueprint or planted_crop.is_empty():
+		return
+	if growth_progress >= 1.0:
+		return
+	var crop: Dictionary = CropDefs.get_crop(planted_crop)
+	if crop.is_empty():
+		return
+	# Water depletes; growth needs water > 0
+	water_level = max(0.0, water_level - 0.05 * delta / 60.0)
+	var rate: float = 1.0 / crop["growth_seconds"]
+	# Half-speed without water
+	if water_level <= 0.0:
+		rate *= 0.5
+	rate *= soil_fertility
+	growth_progress = min(1.0, growth_progress + rate * delta)
+	# Update visual at growth stage boundaries
+	_update_farm_visual()
 
 
 func _apply_visual() -> void:
@@ -112,3 +140,72 @@ func interact(player: Node) -> void:
 				GameManager.log("warn", "No contributable materials in inventory")
 			else:
 				GameManager.log("info", "Contributed: %s  (%.0f%%)" % [str(consumed), build_progress * 100])
+		return
+	# Farm plot interaction
+	if def.get("variant", "") == "farm_plot":
+		_farm_interact(player)
+		return
+	# Throne: declare kingdom
+	if structure_type == "throne":
+		var ks: Node = get_tree().current_scene.get_node_or_null("UIContainer/KingdomScreen")
+		if ks and ks.has_method("open_with_throne"):
+			ks.open_with_throne(self)
+		return
+
+
+func _farm_interact(player: Node) -> void:
+	if not player.has_node("Inventory"):
+		return
+	var inv: Inventory = player.get_node("Inventory")
+	# Empty plot — try to plant any seed
+	if planted_crop.is_empty():
+		for item in inv.items:
+			var def_i: Dictionary = ItemDefs.get_item(item["item_type"])
+			if def_i.get("category", "") == "seed":
+				var crop_id: String = CropDefs.crop_for_seed(item["item_type"])
+				if crop_id.is_empty():
+					continue
+				inv.remove_item(item["id"], 1)
+				planted_crop = crop_id
+				growth_progress = 0.0
+				_update_farm_visual()
+				GameManager.log("info", "Planted %s" % crop_id)
+				return
+		GameManager.log("warn", "No seeds in inventory")
+		return
+	# Mature — harvest
+	if growth_progress >= 1.0:
+		var crop: Dictionary = CropDefs.get_crop(planted_crop)
+		var bonus: int = 0
+		if player.has_node("SkillSystem"):
+			var sk: SkillSystem = player.get_node("SkillSystem")
+			bonus = int(sk.get_level("farming") / 25)
+			sk.add_xp("farming", 15)
+		var qty: int = crop["yield_qty"] + bonus
+		inv.add_item(crop["yield_item"], qty)
+		GameManager.log("info", "Harvested %s ×%d" % [crop["yield_item"], qty])
+		planted_crop = ""
+		growth_progress = 0.0
+		soil_fertility = max(0.5, soil_fertility - 0.1)
+		_update_farm_visual()
+		return
+	# Growing — water if has bucket
+	water_level = 1.0
+	GameManager.log("info", "Watered (%.0f%% grown)" % [growth_progress * 100])
+
+
+func _update_farm_visual() -> void:
+	if mesh == null or def.get("variant", "") != "farm_plot":
+		return
+	var mat := StandardMaterial3D.new()
+	if planted_crop.is_empty():
+		mat.albedo_color = Color(0.35, 0.2, 0.1)  # tilled dirt
+	elif growth_progress < 0.33:
+		mat.albedo_color = Color(0.4, 0.3, 0.15)  # planted
+	elif growth_progress < 0.66:
+		mat.albedo_color = Color(0.4, 0.55, 0.25)  # sprouting green
+	elif growth_progress < 1.0:
+		mat.albedo_color = Color(0.55, 0.65, 0.2)  # growing
+	else:
+		mat.albedo_color = Color(0.85, 0.75, 0.2)  # ripe gold
+	mesh.material_override = mat

@@ -1,0 +1,111 @@
+[gd_scene load_steps=6 format=3 uid="uid://b8sov1hudbars01"]
+
+[ext_resource type="Script" path="res://scenes/ui/hud/hud_bars.gd" id="1_hb"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_Panel"]
+bg_color = Color(0, 0, 0, 0.4)
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_HPFill"]
+bg_color = Color(0.85, 0.18, 0.18, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_SPFill"]
+bg_color = Color(0.95, 0.85, 0.25, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_HGFill"]
+bg_color = Color(0.6, 0.45, 0.25, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_BarBG"]
+bg_color = Color(0.1, 0.1, 0.1, 0.7)
+
+[node name="HUDBars" type="CanvasLayer"]
+layer = 50
+script = ExtResource("1_hb")
+
+[node name="Panel" type="PanelContainer" parent="."]
+offset_left = 380.0
+offset_top = 8.0
+offset_right = 700.0
+offset_bottom = 110.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_Panel")
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/MarginContainer"]
+layout_mode = 2
+
+[node name="HPBar" type="ProgressBar" parent="Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(300, 20)
+max_value = 100.0
+value = 100.0
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBoxFlat_BarBG")
+theme_override_styles/fill = SubResource("StyleBoxFlat_HPFill")
+
+[node name="Label" type="Label" parent="Panel/MarginContainer/VBoxContainer/HPBar"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = -10.0
+offset_right = 50.0
+offset_bottom = 10.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+text = "HP 100/100"
+horizontal_alignment = 1
+
+[node name="SPBar" type="ProgressBar" parent="Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(300, 16)
+max_value = 100.0
+value = 100.0
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBoxFlat_BarBG")
+theme_override_styles/fill = SubResource("StyleBoxFlat_SPFill")
+
+[node name="Label" type="Label" parent="Panel/MarginContainer/VBoxContainer/SPBar"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = -10.0
+offset_right = 50.0
+offset_bottom = 10.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+text = "SP 100/100"
+horizontal_alignment = 1
+
+[node name="HGBar" type="ProgressBar" parent="Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(300, 14)
+max_value = 100.0
+value = 100.0
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBoxFlat_BarBG")
+theme_override_styles/fill = SubResource("StyleBoxFlat_HGFill")
+
+[node name="Label" type="Label" parent="Panel/MarginContainer/VBoxContainer/HGBar"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = -8.0
+offset_right = 50.0
+offset_bottom = 8.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+text = "HG 100"
+horizontal_alignment = 1
