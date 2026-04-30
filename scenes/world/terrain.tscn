@@ -1,0 +1,42 @@
+[gd_scene load_steps=6 format=3 uid="uid://wk3fur4servs"]
+
+[ext_resource type="Script" path="res://scenes/world/terrain.gd" id="1_terrain"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_1"]
+size = Vector2(1500, 1500)
+subdivide_width = 100
+subdivide_depth = 100
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1"]
+albedo_color = Color(0.35, 0.55, 0.25, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_1"]
+size = Vector3(1500, 0.2, 1500)
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_1"]
+cell_size = 1.0
+cell_height = 0.5
+agent_radius = 0.5
+agent_height = 1.8
+geometry_collision_mask = 4294967295
+geometry_source_geometry_mode = 2
+geometry_source_group_name = &"navmesh_source"
+
+[node name="Terrain" type="Node3D"]
+script = ExtResource("1_terrain")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("PlaneMesh_1")
+material_override = SubResource("StandardMaterial3D_1")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+shape = SubResource("BoxShape3D_1")
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
+navigation_mesh = SubResource("NavigationMesh_1")
+
+[node name="NavMeshSource" type="MeshInstance3D" parent="NavigationRegion3D" groups=["navmesh_source"]]
+mesh = SubResource("PlaneMesh_1")

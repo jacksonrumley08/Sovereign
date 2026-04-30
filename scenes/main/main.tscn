@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://b8sov1main001"]
+
+[ext_resource type="Script" path="res://scenes/main/main.gd" id="1_main"]
+
+[node name="Main" type="Node"]
+script = ExtResource("1_main")
+
+[node name="WorldContainer" type="Node3D" parent="."]
+
+[node name="UIContainer" type="CanvasLayer" parent="."]
