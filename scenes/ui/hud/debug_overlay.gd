@@ -34,6 +34,11 @@ func _process(_delta: float) -> void:
 		lines.append("Vel:    %6.2f, %6.2f, %6.2f" % [p.velocity.x, p.velocity.y, p.velocity.z])
 		lines.append("Speed:  %5.2f m/s" % p.velocity.length())
 		lines.append("Moving: %s   Sprint: %s" % [str(p.is_moving), str(p.is_sprinting)])
+		if p.has_node("CombatStateMachine"):
+			var sm = p.get_node("CombatStateMachine")
+			lines.append("Combat: %s" % sm.state_name())
+		lines.append("Weapon: %s" % p.equipped_weapon)
+		lines.append("Target: %s" % ("yes" if p.attack_target else "—"))
 		lines.append("HP:    %d / %d" % [p.health, p.max_health])
 		lines.append("SP:    %5.1f / %5.1f" % [p.stamina, p.max_stamina])
 		lines.append("HG:    %5.1f / %5.1f" % [p.hunger, 100.0])

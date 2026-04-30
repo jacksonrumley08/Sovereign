@@ -1,8 +1,9 @@
-[gd_scene load_steps=12 format=3 uid="uid://b3q30x2hyw441"]
+[gd_scene load_steps=13 format=3 uid="uid://b3q30x2hyw441"]
 
 [ext_resource type="Script" path="res://scenes/world/world.gd" id="1_world"]
 [ext_resource type="PackedScene" uid="uid://wk3fur4servs" path="res://scenes/world/terrain.tscn" id="2_terrain"]
 [ext_resource type="PackedScene" uid="uid://wk3b2bcwn4vs" path="res://scenes/player/player.tscn" id="3_player"]
+[ext_resource type="PackedScene" uid="uid://b8sov1npc00001" path="res://scenes/entities/npc.tscn" id="4_npc"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_1"]
 sky_top_color = Color(0.385, 0.454, 0.55, 1)
@@ -72,3 +73,12 @@ material_override = SubResource("MatPurple")
 
 [node name="Player" parent="." instance=ExtResource("3_player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+
+[node name="NPC1" parent="." instance=ExtResource("4_npc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 1, 0)
+
+[node name="NPC2" parent="." instance=ExtResource("4_npc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 1, 8)
+
+[node name="NPC3" parent="." instance=ExtResource("4_npc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1, -8)
