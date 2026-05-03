@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://b8sov1animal001"]
+[gd_scene load_steps=2 format=3 uid="uid://wk2u4iysh4vs"]
 
 [ext_resource type="Script" path="res://scenes/entities/animal.gd" id="1_animal"]
 

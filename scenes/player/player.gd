@@ -18,6 +18,9 @@ var nearest_station_type: String = ""
 var nearest_station_id: int = 0
 var crafting_station_id: int = 0  # alias for the netmsg payload
 
+# Currently-selected seed to plant. Cycle with R.
+var selected_seed: String = "seed_wheat"
+
 var move_target: Vector3 = Vector3.ZERO
 var is_moving: bool = false
 var is_sprinting: bool = false
@@ -100,6 +103,25 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_8: _equip_tool("stone_axe")
 			KEY_9: _equip_tool("stone_pickaxe")
 			KEY_F: _try_open_crafting()
+			KEY_R: _cycle_seed()
+
+
+func _cycle_seed() -> void:
+	# Cycle through any seed (category=="seed") items in inventory.
+	var seeds: Array[String] = []
+	for item in inventory.items:
+		var def: Dictionary = ItemDefs.get_item(item["item_type"])
+		if def.get("category", "") == "seed":
+			if not seeds.has(item["item_type"]):
+				seeds.append(item["item_type"])
+	if seeds.is_empty():
+		GameManager.log("warn", "No seeds in inventory")
+		return
+	var idx: int = seeds.find(selected_seed)
+	idx = (idx + 1) % seeds.size() if idx >= 0 else 0
+	selected_seed = seeds[idx]
+	var name: String = ItemDefs.get_item(selected_seed).get("display_name", selected_seed)
+	GameManager.log("info", "Selected seed → %s" % name)
 
 
 func _try_open_crafting() -> void:

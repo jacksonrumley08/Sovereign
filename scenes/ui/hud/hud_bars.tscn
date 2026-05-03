@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://b8sov1hudbars01"]
+[gd_scene load_steps=6 format=3 uid="uid://wk23cdnsnwvs"]
 
 [ext_resource type="Script" path="res://scenes/ui/hud/hud_bars.gd" id="1_hb"]
 

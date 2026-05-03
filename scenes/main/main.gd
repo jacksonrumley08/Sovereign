@@ -11,6 +11,7 @@ var crafting_screen: Control = null
 var hud_bars: CanvasLayer = null
 var kingdom_screen: Control = null
 var trade_window: Control = null
+var seed_picker: Control = null
 
 
 func _ready() -> void:
@@ -22,6 +23,7 @@ func _ready() -> void:
 	_load_crafting_screen()
 	_load_kingdom_screen()
 	_load_trade_window()
+	_load_seed_picker()
 	_load_blueprint_placer()
 	GameManager.change_state(GameManager.GameState.PLAYING)
 
@@ -85,6 +87,15 @@ func _load_trade_window() -> void:
 	trade_window = scene.instantiate()
 	trade_window.name = "TradeWindow"
 	ui_container.add_child(trade_window)
+
+
+func _load_seed_picker() -> void:
+	var scene: PackedScene = load("res://scenes/ui/menus/seed_picker.tscn")
+	if scene == null:
+		return
+	seed_picker = scene.instantiate()
+	seed_picker.name = "SeedPicker"
+	ui_container.add_child(seed_picker)
 
 
 func _load_blueprint_placer() -> void:

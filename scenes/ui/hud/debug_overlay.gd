@@ -57,6 +57,10 @@ func _process(_delta: float) -> void:
 			var inv: Inventory = p.get_node("Inventory")
 			lines.append("")
 			lines.append("Inv: %s" % inv.summary())
+		# Selected seed (R to cycle)
+		if "selected_seed" in p:
+			var sname: String = ItemDefs.get_item(p.selected_seed).get("display_name", p.selected_seed)
+			lines.append("Seed: %s (R to cycle)" % sname)
 		if p.is_gathering:
 			lines.append("Gather: %.1fs / %.1fs (%s)" % [p.gather_progress, p.gather_total, p.gather_target.resource_type])
 		if p.has_node("CraftingSystem"):

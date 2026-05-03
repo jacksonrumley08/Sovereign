@@ -96,20 +96,27 @@ func attempt_capture(player: Node) -> bool:
 	if player.has_node("SkillSystem"):
 		skill_lv = player.get_node("SkillSystem").get_level("animal_husbandry")
 	var success_chance: float = 1.0 - def["capture_difficulty"] + (skill_lv * 0.005)
+	GameManager.log("info", "Capture attempt: %.0f%% chance" % (success_chance * 100))
 	if randf() < success_chance:
 		is_tamed = true
-		owner_id = "player"  # placeholder
+		owner_id = "player"
 		var pen: Node = _find_nearest_pen(player)
 		if pen:
 			pen_position = pen.global_position
 			pen_radius = 3.0
 			global_position = pen.global_position
+			GameManager.log("info", "%s tamed → moved to pen at %s" % [animal_type, str(pen.global_position)])
+		else:
+			pen_position = global_position
+			GameManager.log("info", "%s tamed (no pen nearby — staying put)" % animal_type)
 		if player.has_node("SkillSystem"):
 			player.get_node("SkillSystem").add_xp("animal_husbandry", 25)
-		GameManager.log("info", "Tamed %s" % animal_type)
+		# Visual: green tint to show tamed state
+		if mesh and mesh.material_override is StandardMaterial3D:
+			var base: Color = def.get("color", Color.WHITE)
+			(mesh.material_override as StandardMaterial3D).albedo_color = base.lerp(Color(0.3, 1, 0.3), 0.25)
 		return true
-	GameManager.log("warn", "Capture failed (animal flees)")
-	# Run away
+	GameManager.log("warn", "%s capture FAILED — it flees" % animal_type)
 	var flee_dir: Vector3 = (global_position - player.global_position).normalized()
 	wander_target = global_position + flee_dir * 8.0
 	return false

@@ -157,21 +157,13 @@ func _farm_interact(player: Node) -> void:
 	if not player.has_node("Inventory"):
 		return
 	var inv: Inventory = player.get_node("Inventory")
-	# Empty plot — try to plant any seed
+	# Empty plot — open seed picker UI
 	if planted_crop.is_empty():
-		for item in inv.items:
-			var def_i: Dictionary = ItemDefs.get_item(item["item_type"])
-			if def_i.get("category", "") == "seed":
-				var crop_id: String = CropDefs.crop_for_seed(item["item_type"])
-				if crop_id.is_empty():
-					continue
-				inv.remove_item(item["id"], 1)
-				planted_crop = crop_id
-				growth_progress = 0.0
-				_update_farm_visual()
-				GameManager.log("info", "Planted %s" % crop_id)
-				return
-		GameManager.log("warn", "No seeds in inventory")
+		var picker: Node = get_tree().current_scene.get_node_or_null("UIContainer/SeedPicker")
+		if picker and picker.has_method("open_for_plot"):
+			picker.open_for_plot(self)
+		else:
+			GameManager.log("warn", "Seed picker not loaded")
 		return
 	# Mature — harvest
 	if growth_progress >= 1.0:
@@ -192,6 +184,29 @@ func _farm_interact(player: Node) -> void:
 	# Growing — water if has bucket
 	water_level = 1.0
 	GameManager.log("info", "Watered (%.0f%% grown)" % [growth_progress * 100])
+
+
+# Public planting API used by the SeedPicker UI.
+func plant_seed(seed_type: String, player: Node) -> bool:
+	if not planted_crop.is_empty():
+		return false
+	var inv: Inventory = player.get_node("Inventory")
+	if inv == null or not inv.has_item(seed_type, 1):
+		GameManager.log("warn", "No %s in inventory" % seed_type)
+		return false
+	var crop_id: String = CropDefs.crop_for_seed(seed_type)
+	if crop_id.is_empty():
+		return false
+	# Find a stack and consume one
+	for item in inv.items:
+		if item["item_type"] == seed_type:
+			inv.remove_item(item["id"], 1)
+			break
+	planted_crop = crop_id
+	growth_progress = 0.0
+	_update_farm_visual()
+	GameManager.log("info", "Planted %s" % CropDefs.get_crop(crop_id).get("display_name", crop_id))
+	return true
 
 
 func _update_farm_visual() -> void:
