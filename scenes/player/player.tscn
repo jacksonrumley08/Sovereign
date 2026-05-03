@@ -9,17 +9,11 @@
 [ext_resource type="Script" path="res://scripts/systems/skills/skill_system.gd" id="7_sk"]
 [ext_resource type="Script" path="res://scripts/systems/crafting/crafting_system.gd" id="8_cr"]
 [ext_resource type="Script" path="res://scripts/systems/kingdom/kingdom_system.gd" id="9_kg"]
+[ext_resource type="PackedScene" path="res://assets/models/characters/kaykit_adventurers/addons/kaykit_character_pack_adventures/Characters/gltf/Knight.glb" id="10_knight"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1"]
 radius = 0.4
 height = 1.8
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_1"]
-radius = 0.4
-height = 1.8
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1"]
-albedo_color = Color(0.85, 0.6, 0.4, 1)
 
 [node name="Player" type="CharacterBody3D"]
 collision_layer = 1
@@ -32,10 +26,7 @@ shape = SubResource("CapsuleShape3D_1")
 
 [node name="PlayerModel" type="Node3D" parent="."]
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="PlayerModel"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
-mesh = SubResource("CapsuleMesh_1")
-material_override = SubResource("StandardMaterial3D_1")
+[node name="Knight" parent="PlayerModel" instance=ExtResource("10_knight")]
 
 [node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
 path_desired_distance = 0.3

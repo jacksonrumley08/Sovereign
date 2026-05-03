@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://b8sov1resnode01" path="res://scenes/entities/resource_node.tscn" id="5_res"]
 [ext_resource type="PackedScene" uid="uid://b8sov1struct001" path="res://scenes/entities/structure.tscn" id="6_struct"]
 [ext_resource type="PackedScene" uid="uid://b8sov1animal001" path="res://scenes/entities/animal.tscn" id="7_animal"]
+[ext_resource type="PackedScene" uid="uid://b8sov1wolf00001" path="res://scenes/entities/wolf.tscn" id="8_wolf"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_1"]
 sky_top_color = Color(0.385, 0.454, 0.55, 1)
@@ -219,3 +220,14 @@ animal_type = "chicken"
 [node name="Cow1" parent="Animals" instance=ExtResource("7_animal")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0, 12)
 animal_type = "cow"
+
+[node name="Wildlife" type="Node3D" parent="."]
+
+[node name="Wolf1" parent="Wildlife" instance=ExtResource("8_wolf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 0, -18)
+
+[node name="Wolf2" parent="Wildlife" instance=ExtResource("8_wolf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25, 0, -15)
+
+[node name="Wolf3" parent="Wildlife" instance=ExtResource("8_wolf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 0, -20)

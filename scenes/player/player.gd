@@ -419,9 +419,8 @@ func _face(pos: Vector3) -> void:
 	var to: Vector3 = pos - global_position
 	to.y = 0
 	if to.length() > 0.1:
-		var look_target: Vector3 = global_position + to.normalized()
-		look_target.y = global_position.y
-		model.look_at(look_target, Vector3.UP)
+		var target_yaw: float = atan2(to.x, to.z)
+		model.rotation.y = lerp_angle(model.rotation.y, target_yaw, 0.5)
 
 
 func _update_sprint(_delta: float) -> void:
@@ -454,9 +453,8 @@ func _process_movement(_delta: float) -> void:
 	velocity = direction * current_speed
 	move_and_slide()
 	if model and direction.length() > 0.1:
-		var look_target: Vector3 = global_position + direction
-		look_target.y = global_position.y
-		model.look_at(look_target, Vector3.UP)
+		var target_yaw: float = atan2(direction.x, direction.z)
+		model.rotation.y = lerp_angle(model.rotation.y, target_yaw, 0.25)
 
 
 func _get_encumbrance_modifier() -> float:

@@ -89,9 +89,8 @@ func _face(pos: Vector3) -> void:
 	var to: Vector3 = pos - global_position
 	to.y = 0
 	if to.length() > 0.1:
-		var look_target: Vector3 = global_position + to.normalized()
-		look_target.y = global_position.y
-		model.look_at(look_target, Vector3.UP)
+		var target_yaw: float = atan2(to.x, to.z)
+		model.rotation.y = lerp_angle(model.rotation.y, target_yaw, 0.3)
 
 
 func _try_attack_player() -> void:

@@ -1,19 +1,13 @@
-[gd_scene load_steps=7 format=3 uid="uid://b8sov1npc00001"]
+[gd_scene load_steps=6 format=3 uid="uid://b8sov1npc00001"]
 
 [ext_resource type="Script" path="res://scenes/entities/npc.gd" id="1_npc"]
 [ext_resource type="Script" path="res://scripts/systems/combat/combat_state_machine.gd" id="2_csm"]
 [ext_resource type="Script" path="res://scripts/components/health_component.gd" id="3_hp"]
+[ext_resource type="PackedScene" path="res://assets/models/characters/kaykit_skeletons/addons/kaykit_character_pack_skeletons/Characters/gltf/Skeleton_Warrior.glb" id="4_skel"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1"]
 radius = 0.4
 height = 1.8
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_1"]
-radius = 0.4
-height = 1.8
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1"]
-albedo_color = Color(0.7, 0.25, 0.25, 1)
 
 [node name="NPC" type="CharacterBody3D"]
 collision_layer = 2
@@ -26,10 +20,7 @@ shape = SubResource("CapsuleShape3D_1")
 
 [node name="Model" type="Node3D" parent="."]
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Model"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
-mesh = SubResource("CapsuleMesh_1")
-material_override = SubResource("StandardMaterial3D_1")
+[node name="SkeletonWarrior" parent="Model" instance=ExtResource("4_skel")]
 
 [node name="HealthComponent" type="Node" parent="."]
 script = ExtResource("3_hp")

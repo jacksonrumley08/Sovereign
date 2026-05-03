@@ -1,0 +1,35 @@
+[gd_scene load_steps=6 format=3 uid="uid://wk3i5lsjv4vs"]
+
+[ext_resource type="Script" path="res://scenes/entities/npc.gd" id="1_npc"]
+[ext_resource type="Script" path="res://scripts/systems/combat/combat_state_machine.gd" id="2_csm"]
+[ext_resource type="Script" path="res://scripts/components/health_component.gd" id="3_hp"]
+[ext_resource type="PackedScene" path="res://assets/models/characters/quaternius_animals/glTF/Wolf.gltf" id="4_wolf"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1"]
+radius = 0.5
+height = 0.9
+
+[node name="Wolf" type="CharacterBody3D"]
+collision_layer = 2
+collision_mask = 9
+script = ExtResource("1_npc")
+aggro_range = 14.0
+attack_range = 1.6
+move_speed = 5.5
+equipped_weapon = "flint_knife"
+peaceful = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0.5, 0)
+shape = SubResource("CapsuleShape3D_1")
+
+[node name="Model" type="Node3D" parent="."]
+
+[node name="WolfModel" parent="Model" instance=ExtResource("4_wolf")]
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("3_hp")
+max_health = 80
+
+[node name="CombatStateMachine" type="Node" parent="."]
+script = ExtResource("2_csm")
