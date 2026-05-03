@@ -12,6 +12,8 @@ extends CharacterBody3D
 @export var equipped_weapon: String = "flint_knife"
 @export var equipped_armor: String = "none"
 @export var peaceful: bool = false  # Won't aggro on proximity or on hit
+@export var loot_drops: Array[Dictionary] = []  # [{item_type, quantity}] dropped on death
+@export var npc_kind: String = "humanoid"  # "humanoid" | "wildlife" — affects AI flavor
 
 # Stats consumed by CombatStateMachine
 var stamina: float = 100.0
@@ -97,11 +99,16 @@ func _try_attack_player() -> void:
 	var weapon: Dictionary = WeaponDefs.get_weapon(equipped_weapon)
 	if combat_sm.try_attack(1, 0, weapon["speed"], weapon["stamina_cost"]):
 		attack_cooldown = weapon["speed"] + 0.5
-		# Apply damage at animation midpoint via small delay
 		await get_tree().create_timer(weapon["speed"] * 0.5).timeout
 		if not is_instance_valid(target) or ai_state == AIState.DEAD:
 			return
-		if global_position.distance_to(target.global_position) > attack_range * 1.2:
+		# Use weapon range (with forward offset like the player) for damage application,
+		# not attack_range (which is the AI's "stop walking" distance, can be larger).
+		var fwd: Vector3 = -global_transform.basis.z if model == null else Vector3(sin(model.rotation.y), 0, cos(model.rotation.y))
+		var swing_origin: Vector3 = global_position + fwd * 0.5
+		var to: Vector3 = target.global_position - swing_origin
+		to.y = 0
+		if to.length() > weapon["range"] * 1.3:
 			return
 		var calc: Dictionary = DamageCalculator.calculate_damage(
 			weapon["damage"], 1, weapon["damage_type"], "torso",
@@ -148,15 +155,21 @@ func _on_damaged(_amount: int) -> void:
 
 
 func _on_died() -> void:
-	GameManager.log("info", "NPC died")
+	GameManager.log("info", "%s died" % npc_kind)
 	ai_state = AIState.DEAD
+	# Drop loot to the killer's inventory (P1 mock — no corpse looting yet)
+	if not loot_drops.is_empty():
+		var p: Node = GameManager.player
+		if p and p.has_node("Inventory"):
+			var inv: Inventory = p.get_node("Inventory")
+			for d in loot_drops:
+				inv.add_item(d["item_type"], d["quantity"])
+				GameManager.log("info", "Loot: %s ×%d" % [d["item_type"], d["quantity"]])
 	# Tint model dark to indicate death
 	if model:
 		var mesh_inst: MeshInstance3D = model.get_node_or_null("MeshInstance3D")
 		if mesh_inst and mesh_inst.material_override is StandardMaterial3D:
 			(mesh_inst.material_override as StandardMaterial3D).albedo_color = Color(0.15, 0.15, 0.15, 1)
-	# Disable further physics
 	set_physics_process(false)
-	# Remove collision after a short delay so the corpse lingers
 	await get_tree().create_timer(2.0).timeout
 	queue_free()

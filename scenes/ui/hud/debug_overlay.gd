@@ -33,10 +33,15 @@ func _process(_delta: float) -> void:
 		lines.append("Pos:    %6.2f, %6.2f, %6.2f" % [p.global_position.x, p.global_position.y, p.global_position.z])
 		lines.append("Vel:    %6.2f, %6.2f, %6.2f" % [p.velocity.x, p.velocity.y, p.velocity.z])
 		lines.append("Speed:  %5.2f m/s" % p.velocity.length())
-		lines.append("Moving: %s   Sprint: %s" % [str(p.is_moving), str(p.is_sprinting)])
+		lines.append("Move: %s  Sprint: %s  Facing: %d°" % [str(p.is_moving), str(p.is_sprinting), int(rad_to_deg(p.facing_yaw))])
 		if p.has_node("CombatStateMachine"):
 			var sm = p.get_node("CombatStateMachine")
 			lines.append("Combat: %s" % sm.state_name())
+		var tier_name: String = ["JAB", "NORMAL", "HEAVY"][p.pending_tier]
+		var charge_marker: String = "  ⚡CHARGING" if p.is_charging_heavy else ""
+		lines.append("Next swing: %s%s" % [tier_name, charge_marker])
+		if p.is_blocking:
+			lines.append("BLOCKING (sector %d)" % p.block_dir_sector)
 		# Show actual main_hand item from equipment manager
 		var main_label: String = p.equipped_weapon
 		if p.has_node("EquipmentManager") and p.has_node("Inventory"):
